@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patanisho Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="/static/css/style.css"/>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js"></script>
+</head>
+<body>
+  <!-- Loading Spinner -->
+  <div id="loading" style="display:none;text-align:center;padding:2rem;">Loading...</div>
+
+  <!-- Login Page -->
+  <div id="login" class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="logo-container">
+          <div class="circle">P</div>
+          <h1>Patanisho</h1>
+        </div>
+        <p>Welcome back! Please log in to continue.</p>
+      </div>
+      <form class="login-form" id="loginForm">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        </div>
+        <div class="remember-forgot">
+          <div class="checkbox-container">
+            <input type="checkbox" id="remember" name="remember">
+            <label for="remember">Remember me</label>
+          </div>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+        <button type="submit" class="login-btn">Log In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="wrapper">
+    <div class="sidebar" id="sidebar">
+      <div class="logo">
+        <div class="circle" style="background:#3b82f6;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;">P</div>
+        <h2 class="nav-text">Patanisho</h2>
+      </div>
+      <div class="nav-item active">
+        <i class="fas fa-tachometer-alt"></i>
+        <span class="nav-text">Dashboard</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-users"></i>
+        <span class="nav-text">Residents</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-utensils"></i>
+        <span class="nav-text">Meal Planning</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-boxes"></i>
+        <span class="nav-text">Inventory</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-fire"></i>
+        <span class="nav-text">Kitchen Ops</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-chart-pie"></i>
+        <span class="nav-text">Reports</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-comment-alt"></i>
+        <span class="nav-text">Feedback</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-cog"></i>
+        <span class="nav-text">Settings</span>
+      </div>
+      <div class="logout-item" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        <span class="nav-text">Logout</span>
+      </div>
+    </div>
+
+    <div class="main" id="main">
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:1rem;">
+          <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar" aria-expanded="false">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search residents, meals, or alerts...">
+          </div>
+        </div>
+        <div class="user-menu">
+          <div class="notification-icon">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge">8</span>
+          </div>
+          <div class="user-profile">
+            <div class="user-avatar">A</div>
+            <span class="nav-text">Admin</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="greeting">Good afternoon, Admin</div>
+
+      <div class="overview">
+        <div class="stat-card">
+          <div class="stat-icon blue">
+            <i class="fas fa-user"></i>
+          </div>
+          <div>
+            <div class="stat-value">57</div>
+            <div class="stat-label">Total Residents</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <i class="fas fa-utensils"></i>
+          </div>
+          <div>
+            <div class="stat-value">173</div>
+            <div class="stat-label">Meals Today</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red">
+            <i class="fas fa-exclamation-circle"></i>
+          </div>
+          <div>
+            <div class="stat-value">8</div>
+            <div class="stat-label">Alerts</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon amber">
+            <i class="fas fa-boxes"></i>
+          </div>
+          <div>
+            <div class="stat-value">12</div>
+            <div class="stat-label">Low Stock Items</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="charts-container">
+        <div class="section">
+          <div class="section-header">
+            <h2>Meal Preferences</h2>
+            <div class="section-actions">
+              <button class="action-btn"><i class="fas fa-sync-alt"></i></button>
+              <button class="action-btn"><i class="fas fa-ellipsis-v"></i></button>
+            </div>
+          </div>
+          <div class="tabs">
+            <div class="tab active">Weekly</div>
+            <div class="tab">Monthly</div>
+            <div class="tab">Yearly</div>
+          </div>
+          <div id="meal-preferences">
+            <!-- Populated dynamically by JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <h2>Today's Meals</h2>
+          <div class="section-actions">
+            <button class="primary-btn">View Menu</button>
+          </div>
+        </div>
+        <div id="todays-meals">
+          <!-- Populated dynamically by JavaScript -->
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <h2>Recent Alerts</h2>
+          <div class="section-actions">
+            <button class="primary-btn">View All</button>
+          </div>
+        </div>
+        <ul class="alerts-list" id="alerts-list">
+          <!-- Populated dynamically by JavaScript -->
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+  
+  <!-- Firebase App (required) -->
+<script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js"></script>
+<!-- Firebase Auth -->
+<script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js"></script>
+<!-- Firebase Firestore -->
+<script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js"></script>
+
+  <script src="/static/js/script.js"></script>
+</body>
+</html>
